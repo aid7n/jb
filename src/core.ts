@@ -2,7 +2,7 @@ import { execSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import semver from "semver";
-import type { BunLock, YarnInfoLine } from "./types";
+import type { BunLock, PackageJson, YarnInfoLine } from "./types";
 
 export class BunJfrog {
   private stdout = process.stdout;
@@ -39,7 +39,9 @@ export class BunJfrog {
     const args = process.argv.slice(3);
     execSync(`bun install ${args.join(" ")}`, { stdio: "inherit" });
     this.log(
-      `intercepted yarn install command - forwarded to bun install with args: ${args.join(" ")}`,
+      `intercepted yarn install command - forwarded to bun install with args: ${args.join(
+        " ",
+      )}`,
     );
     process.exitCode = 0;
   }
@@ -82,7 +84,7 @@ export class BunJfrog {
     const lockFile = JSON.parse(parsedLockFile) as BunLock;
 
     // consumer packages
-    for (const pkgData of Object.values(lockFile.packages)) {
+    for (const pkgData of Object.values(lockFile.packages ?? {})) {
       const [nameWithVersion, , deps] = pkgData;
       if (nameWithVersion.includes("workspace:")) continue;
 
@@ -106,27 +108,30 @@ export class BunJfrog {
           Version: version,
           Dependencies: shouldPushDeps
             ? Object.entries(allDeps).flatMap(([name, requestedVersion]) => {
-                const resolvedDep = Object.entries(lockFile.packages).find(
-                  ([, data]) => {
-                    const [nameWithVersion] = data;
-                    const isScoped = nameWithVersion.startsWith("@");
-                    const [pkgName, version] = nameWithVersion
-                      .slice(isScoped ? 1 : 0)
-                      .split("@");
-                    return (
-                      version &&
-                      pkgName === name &&
-                      semver.satisfies(version, requestedVersion)
-                    );
-                  },
-                );
+                const resolvedDep = Object.entries(
+                  lockFile.packages ?? {},
+                ).find(([, data]) => {
+                  const [nameWithVersion] = data;
+                  const isScoped = nameWithVersion.startsWith("@");
+                  const [pkgName, version] = nameWithVersion
+                    .slice(isScoped ? 1 : 0)
+                    .split("@");
+                  return (
+                    version &&
+                    pkgName === name &&
+                    semver.satisfies(version, requestedVersion)
+                  );
+                });
                 if (!resolvedDep) return [];
                 const isScoped = name.startsWith("@");
                 const resolvedDepVersion = resolvedDep[1][0]
                   .slice(isScoped ? 1 : 0)
                   .split("@")[1];
                 return {
-                  descriptor: `${name}@npm:${requestedVersion.replaceAll("||", " || ")}`,
+                  descriptor: `${name}@npm:${requestedVersion.replaceAll(
+                    "||",
+                    " || ",
+                  )}`,
                   locator: `${name}@npm:${resolvedDepVersion}`,
                 };
               })
@@ -143,6 +148,46 @@ export class BunJfrog {
         ...wsData.peerDependencies,
         ...wsData.devDependencies,
       };
+      for (const [depName, requestedVersion] of Object.entries(deps)) {
+        if (requestedVersion.includes("catalog:")) {
+          const catalogName =
+            requestedVersion !== "catalog:" && requestedVersion.split(":")[1];
+          const catalogVer = catalogName
+            ? lockFile.catalogs?.[catalogName]?.[depName]
+            : lockFile.catalog?.[depName];
+          if (catalogVer) {
+            deps[depName] = catalogVer;
+            if (Bun.env.BUN_JF_WRITE_CATALOG_FIXES === "true") {
+              const pkgJson = path.resolve(
+                rootDir,
+                wsName === "" ? "package.json" : `${wsName}/package.json`,
+              );
+              if (fs.existsSync(pkgJson)) {
+                const pkgData = JSON.parse(
+                  fs.readFileSync(pkgJson, "utf-8"),
+                ) as PackageJson;
+                if (pkgData?.dependencies?.[depName]) {
+                  pkgData.dependencies[depName] = catalogVer;
+                }
+                if (pkgData?.devDependencies?.[depName]) {
+                  pkgData.devDependencies[depName] = catalogVer;
+                }
+                if (pkgData?.peerDependencies?.[depName]) {
+                  pkgData.peerDependencies[depName] = catalogVer;
+                }
+                fs.writeFileSync(pkgJson, JSON.stringify(pkgData, null, 2));
+              }
+            }
+            this.log(
+              `[${
+                wsData.name
+              }] Resolved ${depName} to version ${catalogVer} from catalog:${
+                catalogName ? ` "${catalogName}"` : ""
+              }`,
+            );
+          }
+        }
+      }
       const shouldPushDeps = Object.keys(deps).length > 0;
       yarnInfo.set(`${wsData.name}@workspace:${wsName === "" ? "." : wsName}`, {
         value: `${wsData.name}@workspace:${wsName === "" ? "." : wsName}`,
@@ -150,20 +195,20 @@ export class BunJfrog {
           Version: wsData.version || "0.0.0",
           Dependencies: shouldPushDeps
             ? Object.entries(deps).flatMap(([name, requestedVersion]) => {
-                const resolvedDep = Object.entries(lockFile.packages).find(
-                  ([, data]) => {
-                    const [nameWithVersion] = data;
-                    const isScoped = nameWithVersion.startsWith("@");
-                    const [pkgName, version] = nameWithVersion
-                      .slice(isScoped ? 1 : 0)
-                      .split("@");
-                    return (
-                      version &&
-                      pkgName === name &&
-                      semver.satisfies(version, requestedVersion)
-                    );
-                  },
-                );
+                const resolvedDep = Object.entries(
+                  lockFile.packages ?? {},
+                ).find(([, data]) => {
+                  const [nameWithVersion] = data;
+                  const isScoped = nameWithVersion.startsWith("@");
+                  const [pkgName, version] = nameWithVersion
+                    .slice(isScoped ? 1 : 0)
+                    .split("@");
+                  return (
+                    version &&
+                    pkgName === name &&
+                    semver.satisfies(version, requestedVersion)
+                  );
+                });
                 if (!resolvedDep) return [];
                 const isScoped = name.startsWith("@");
                 const isWorkspace = requestedVersion.includes("workspace:");
@@ -177,8 +222,12 @@ export class BunJfrog {
                   ? resolvedWorkspace?.[0]
                   : resolvedDep[1][0].slice(isScoped ? 1 : 0).split("@")[1];
                 return {
-                  descriptor: `${name}@${isWorkspace ? "" : "npm:"}${requestedVersion.replaceAll("||", " || ")}`,
-                  locator: `${name}@${isWorkspace ? "workspace" : "npm"}:${resolvedDepVersion}`,
+                  descriptor: `${name}@${
+                    isWorkspace ? "" : "npm:"
+                  }${requestedVersion.replaceAll("||", " || ")}`,
+                  locator: `${name}@${
+                    isWorkspace ? "workspace" : "npm"
+                  }:${resolvedDepVersion}`,
                 };
               })
             : undefined,

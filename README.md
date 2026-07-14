@@ -62,10 +62,11 @@ bun start <flags> # or ./dist/yarn <flags>
 
 The app works on its own by default, however you are able to configure some default behaviors via env variables:
 
-| Environment Variable      | Type      | Default | Values                     |
-| ------------------------- | --------- | ------- | -------------------------- |
-| `BUN_JF_LOGS_ENABLED`     | `boolean` | `true`  | `true` `false`             |
-| `BUN_JF_SIMULATE_VERSION` | `string`  | `3.0.0` | `<any valid semver value>` |
+| Environment Variable         | Type      | Default | Values                     | Description                                               |
+| ---------------------------- | --------- | ------- | -------------------------- | --------------------------------------------------------- |
+| `BUN_JF_LOGS_ENABLED`        | `boolean` | `true`  | `true` `false`             | Enables logging to ./bun-jfrog.log                        |
+| `BUN_JF_SIMULATE_VERSION`    | `string`  | `3.0.0` | `<any valid semver value>` | Choose which Yarn version to simulate for JF CLI          |
+| `BUN_JF_WRITE_CATALOG_FIXES` | `boolean` | `false` | `true` `false`             | Write catalog resolutions to workspace package.json files |
 
 ## Disclaimer
 
