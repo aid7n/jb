@@ -10,7 +10,7 @@
   <li>🌐 Usable in any environment including CI</li>
   <li>🚀 Lightning fast builds and accurate build info collection</li>
   <li>❌ No patching of JFrog CLI client required</li>
-  <li>⏰ Catalog & workspace support</li>
+  <li>📚 Catalog & workspace support</li>
 </ul>
 
 <p align="center">
