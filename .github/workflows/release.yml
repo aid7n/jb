@@ -1,23 +1,15 @@
-name: CI
+name: Release
 
 on:
-  pull_request:
+  push:
     branches:
       - main
-    types:
-      - opened
-      - synchronize
-      - reopened
-
-defaults:
-  run:
-    shell: bash
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  ci:
-    name: CI
+  release:
+    name: Release
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -45,10 +37,9 @@ jobs:
         name: Resolve & install deps
         run: bun install --frozen-lockfile
 
-      - id: lint
-        name: Lint
-        run: bun lint
-
-      - id: typecheck
-        name: Typecheck
-        run: bun typecheck
+      - id: create-release-pr
+        name: Create release PR
+        uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d
+        with:
+          version-script: bun changeset version
+          pr-title: "chore(release): version bump"
