@@ -2,19 +2,25 @@ import { execSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import semver from "semver";
-import type { BunLock, PackageJson, YarnInfoLine } from "./types";
+import { JBParser } from "./parser";
+import type { PackageJson, YarnInfoLine } from "./types";
 
-export class BunJfrog {
+export class JB {
   private stdout = process.stdout;
 
   constructor() {}
 
-  private log(message: string): void {
+  /**
+   * writes a message to the logfile
+   * @param message text to write to logfile
+   * @returns void
+   */
+  private Log(message: string): void {
     const v = Bun.env.BUN_JF_LOGS_ENABLED || "true";
     if (v !== "true") return;
-    const prefix = `[bun-jfrog] ${new Date().toISOString()} - `;
-    const rootDir = path.resolve(process.cwd());
-    const rootPkgLockPath = path.resolve(rootDir, "bun-jfrog.log");
+    const prefix = `[@7x/jb] ${new Date().toISOString()} - `;
+    const rootDir = path.resolve(Bun.env.TURBO_INVOCATION_DIR ?? process.cwd());
+    const rootPkgLockPath = path.resolve(rootDir, "jfrog-bun.log");
     if (!fs.existsSync(rootPkgLockPath)) {
       fs.writeFileSync(rootPkgLockPath, prefix + message + "\n", { flag: "w" });
     } else {
@@ -22,23 +28,37 @@ export class BunJfrog {
     }
   }
 
-  public exitWithError(message: string): void {
-    console.error(`error: ${message}\n`);
-    this.log(`error: ${message}`);
+  /**
+   * logs an error message to the logfile and optionally to the console, then sets the process exit code to 1
+   * @param message text to write to logfile (and screen if consoleLog is enabled)
+   * @param consoleLog whether to log to the console or not
+   */
+  public ExitWithError(message: string, consoleLog?: boolean): void {
+    const prefix = `[@7x/jb] -`;
+    if (consoleLog) console.error(`${prefix} error: ${message}\n`);
+    this.Log(`error: ${message}`);
     process.exitCode = 1;
   }
 
-  public invokeVersionCmd(): void {
+  /**
+   * intercepts `yarn version` command and outputs a simulated version to satisfy jfrog CLI's version checks
+   * @returns void
+   */
+  public InvokeVersionCmd(): void {
     const v = Bun.env.BUN_JF_SIMULATE_VERSION || "3.0.0";
     this.stdout.write(v);
-    this.log("intercepted yarn version command successfully");
+    this.Log("intercepted yarn version command successfully");
     process.exitCode = 0;
   }
 
-  public invokeBunInstall(): void {
+  /**
+   * intercepts `yarn install` command and forwards it to `bun install` with the same arguments
+   * @returns void
+   */
+  public InvokeBunInstall(): void {
     const args = process.argv.slice(3);
     execSync(`bun install ${args.join(" ")}`, { stdio: "inherit" });
-    this.log(
+    this.Log(
       `intercepted yarn install command - forwarded to bun install with args: ${args.join(
         " ",
       )}`,
@@ -46,42 +66,44 @@ export class BunJfrog {
     process.exitCode = 0;
   }
 
-  public invokeConfigCmd(): void {
+  /**
+   * intercepts `yarn config get` & `yarn config set` commands and outputs responses to satisfy jfrog CLI's checks
+   * @returns void
+   */
+  public InvokeConfigCmd(typeOverride?: "get" | "set"): void {
     const [type] = process.argv.slice(3);
-    if (type === "get") {
+    const effectiveType = typeOverride ?? type;
+    if (effectiveType === "get") {
       this.stdout.write("{}");
-      this.log(`intercepted yarn config get`);
+      this.Log(`intercepted yarn config get`);
       process.exitCode = 0;
-    } else if (type === "set") {
+    } else if (effectiveType === "set") {
       // no output needed
-      this.log(`intercepted yarn config set`);
+      this.Log(`intercepted yarn config set`);
       process.exitCode = 0;
     } else {
-      this.log(`unrecognized config type: ${type}`);
-      this.exitWithError(`unrecognized config type: ${type}`);
+      this.ExitWithError(
+        `unrecognized config arg type: ${effectiveType}`,
+        true,
+      );
     }
   }
 
-  public invokeInfoCmd(): void {
+  /**
+   * intercepts **any** `yarn info <...>` command and outputs the expected JSONL data for jfrog CLI to consume for build info collection
+   * @returns void
+   */
+  public async InvokeInfoCmd(): Promise<void> {
+    const parser = new JBParser();
     const yarnInfo: Map<string, YarnInfoLine> = new Map();
-    const rootDir = path.resolve(process.cwd());
+    const rootDir = path.resolve(Bun.env.TURBO_INVOCATION_DIR ?? process.cwd());
     const rootPkgLockPath = path.resolve(rootDir, "bun.lock");
 
-    if (!fs.existsSync(rootPkgLockPath)) {
-      this.log("root bun.lock file not found - exiting with error");
-      process.exitCode = 1;
-      throw new Error(
-        "root bun.lock not found - are you running this script from the root of your repo?",
-      );
-    }
+    const lockFile = await parser.BunLock(rootPkgLockPath).catch((err) => {
+      this.ExitWithError(err.message, true);
+    });
 
-    const parsedLockFile = fs
-      .readFileSync(rootPkgLockPath, "utf-8")
-      .replaceAll(" ", "")
-      .replaceAll("\n", "")
-      .replaceAll(",}", "}")
-      .replaceAll(",]", "]");
-    const lockFile = JSON.parse(parsedLockFile) as BunLock;
+    if (!lockFile) return;
 
     // consumer packages
     for (const pkgData of Object.values(lockFile.packages ?? {})) {
@@ -178,7 +200,7 @@ export class BunJfrog {
                 fs.writeFileSync(pkgJson, JSON.stringify(pkgData, null, 2));
               }
             }
-            this.log(
+            this.Log(
               `[${
                 wsData.name
               }] Resolved ${depName} to version ${catalogVer} from catalog:${
@@ -244,7 +266,7 @@ export class BunJfrog {
         .join("\n") + "\n",
     );
 
-    this.log(
+    this.Log(
       `intercepted yarn info command successfully - outputted ${yarnInfo.size} lines`,
     );
     process.exitCode = 0;

@@ -1,0 +1,26 @@
+{
+  "name": "@7x/jb-linux-arm64",
+  "version": "0.0.0",
+  "private": false,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aid7n/jb",
+    "directory": "packages/jb-linux-arm64"
+  },
+  "devDependencies": {
+    "prettier": "catalog:"
+  },
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "arm64"
+  ],
+  "bin": {
+    "yarn": "./bin/yarn"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

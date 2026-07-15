@@ -1,0 +1,36 @@
+{
+  "name": "@7x/jb-config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "files": [
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aid7n/jb",
+    "directory": "packages/config"
+  },
+  "exports": {
+    "./ts": "./src/ts.json",
+    "./eslint": "./src/eslint.js"
+  },
+  "dependencies": {
+    "semver": "^7"
+  },
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "@types/bun": "catalog:",
+    "eslint": "catalog:",
+    "eslint-plugin-turbo": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-only-warn": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "prettier": "catalog:"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

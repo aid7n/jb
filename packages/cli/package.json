@@ -1,0 +1,29 @@
+{
+  "name": "@7x/jb",
+  "version": "0.0.0",
+  "private": false,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aid7n/jb",
+    "directory": "packages/cli"
+  },
+  "devDependencies": {
+    "prettier": "catalog:",
+    "@7x/jb-config": "workspace:*"
+  },
+  "optionalDependencies": {
+    "@7x/jb-darwin-arm64": "workspace:*",
+    "@7x/jb-darwin-x64": "workspace:*",
+    "@7x/jb-linux-x64": "workspace:*",
+    "@7x/jb-linux-arm64": "workspace:*",
+    "@7x/jb-win32-x64": "workspace:*",
+    "@7x/jb-win32-arm64": "workspace:*"
+  },
+  "bin": {
+    "jb": "./bin/jb.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

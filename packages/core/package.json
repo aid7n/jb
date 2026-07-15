@@ -1,0 +1,45 @@
+{
+  "name": "@7x/jb-core",
+  "version": "0.0.0",
+  "private": false,
+  "license": "MIT",
+  "files": [
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aid7n/jb",
+    "directory": "packages/core"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit",
+    "dev": "bun run --watch src/main.ts --jbdev",
+    "build": "bun ./build.ts"
+  },
+  "exports": {
+    ".": "./src/jb.ts",
+    "./types": "./src/types.ts",
+    "./parser": "./src/parser.ts"
+  },
+  "dependencies": {
+    "semver": "^7",
+    "@inquirer/prompts": "catalog:"
+  },
+  "devDependencies": {
+    "@7x/jb-config": "workspace:*",
+    "@types/semver": "^7.7.1",
+    "@eslint/js": "catalog:",
+    "@types/bun": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-only-warn": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "prettier": "catalog:"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

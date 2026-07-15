@@ -1,9 +1,9 @@
 <h1 align="center">
-  Bun JFrog
+  jb (jfrog-bun)
 </h1>
 
 <p align="center">
-  Wrapper to provide functionality for <a href="https://bun.com/">Bun</a> package manager in JFrog CLI with build info collection support.
+  Yarn wrapper to provide functionality for <a href="https://bun.com/">Bun</a> package manager in JFrog CLI with build info collection support.
 </p>
 
 <ul align="center" style="list-style: none;">
@@ -15,7 +15,7 @@
 
 <p align="center">
   <a><img src="https://img.shields.io/badge/fast-speed?style=flat&label=speed&labelColor=%23303030&color=%231f1f1f" alt="Speed" /></a>
-  <a href="https://github.com/aid7n/bun-jfrog?tab=MIT-1-ov-file"><img src="https://img.shields.io/badge/MIT-license?style=flat&label=license&labelColor=%23303030&color=%231f1f1f" alt="MIT License" /></a>
+  <a href="https://github.com/aid7n/jb?tab=MIT-1-ov-file"><img src="https://img.shields.io/badge/MIT-license?style=flat&label=license&labelColor=%23303030&color=%231f1f1f" alt="MIT License" /></a>
 </p>
 
 ---
@@ -32,12 +32,12 @@ Depending on your project setup, using Bun instead of Yarn can result in **huge*
 
 ## Installation
 
-To download the latest built executable, check the [releases]("https://github.com/aid7n/bun-jfrog/releases") page and download the build for your OS/architecture.
+To download the latest built executable, check the [releases]("https://github.com/aid7n/jb/releases") page and download the build for your OS/architecture.
 
 Once downloaded, you will need to:
 
-- Extract the `yarn` executable to any accessible directory on your machine - for example, `/Users/me/bun-jfrog`
-- Prepend the directory to your PATH variable; using the example directory above, for Linux/macOS you can use `export PATH="/Users/me/bun-jfrog/:$PATH"`.
+- Extract the `yarn` executable to any accessible directory on your machine - for example, `/Users/me/jb`
+- Prepend the directory to your PATH variable; using the example directory above, for Linux/macOS you can use `export PATH="/Users/me/jb/:$PATH"`.
   - To use in GitHub Actions CI runners, export to `$GITHUB_PATH` instead
 
 After doing so, any `yarn` commands, both outside and inside JF CLI, will be intercepted by the tool to work natively with Bun.
@@ -46,8 +46,8 @@ After doing so, any `yarn` commands, both outside and inside JF CLI, will be int
 
 ```bash
 # clone the repo and install deps
-git clone https://github.com/aid7n/bun-jfrog.git
-cd bun-jfrog
+git clone https://github.com/aid7n/jb.git
+cd jb
 bun install
 
 # develop/watch
@@ -64,7 +64,7 @@ The app works on its own by default, however you are able to configure some defa
 
 | Environment Variable         | Type      | Default | Values                     | Description                                               |
 | ---------------------------- | --------- | ------- | -------------------------- | --------------------------------------------------------- |
-| `BUN_JF_LOGS_ENABLED`        | `boolean` | `true`  | `true` `false`             | Enables logging to ./bun-jfrog.log                        |
+| `BUN_JF_LOGS_ENABLED`        | `boolean` | `true`  | `true` `false`             | Enables logging to ./jfrog-bun.log                        |
 | `BUN_JF_SIMULATE_VERSION`    | `string`  | `3.0.0` | `<any valid semver value>` | Choose which Yarn version to simulate for JF CLI          |
 | `BUN_JF_WRITE_CATALOG_FIXES` | `boolean` | `false` | `true` `false`             | Write catalog resolutions to workspace package.json files |
 
@@ -78,4 +78,4 @@ For any questions or suggestions, feel free to reach out via GitHub issues.
 
 ## License
 
-This project is licensed under the MIT license. See the [LICENSE]("https://github.com/aid7n/bun-jfrog?tab=MIT-1-ov-file") file for more details.
+This project is licensed under the MIT license. See the [LICENSE]("https://github.com/aid7n/jb?tab=MIT-1-ov-file") file for more details.
