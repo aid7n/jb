@@ -1,5 +1,5 @@
 import path from "node:path";
-import { targetMap } from "./src/jb";
+import { targetMap } from "./jb";
 
 const requestedTarget = process.argv[2];
 const targets: Bun.Build.CompileTarget[] = [];

@@ -1,3 +1,3 @@
-## @7x/jb-linux-arm64
+## @7x/jb-config
 
-This package contains the Linux ARM64 binary for jb (jfrog-bun)
+This package contains shared eslint/ts configs for jb (jfrog-bun)
