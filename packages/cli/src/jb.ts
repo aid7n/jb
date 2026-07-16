@@ -41,7 +41,11 @@ async function initialize(disableLog?: boolean): Promise<InitResult | null> {
       );
     }
 
-    const bunBinPath = execSync("bun pm bin -g").toString().trim();
+    const bunBinPath = execSync("bun pm bin -g", {
+      shell: isWindows ? "powershell" : undefined,
+    })
+      .toString()
+      .trim();
     if (!bunBinPath || !fs.existsSync(bunBinPath)) {
       throw new Error("Bun binary not found");
     }
@@ -76,6 +80,9 @@ function locateBin(
     if (isWindows) {
       const _path = execSync(
         `gcm ${executable} -erroraction 'silentlycontinue' | select -expandproperty source`,
+        {
+          shell: "powershell",
+        },
       )
         .toString()
         .trim();
