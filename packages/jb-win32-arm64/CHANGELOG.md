@@ -1,5 +1,11 @@
 # @7x/jb-win32-arm64
 
+## 1.0.2
+
+### Patch Changes
+
+- cf09411: correct bin export in package json
+
 ## 1.0.1
 
 ### Patch Changes

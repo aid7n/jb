@@ -9,12 +9,12 @@
         "@commitlint/cli": "^21.2.1",
         "@commitlint/config-conventional": "^21.2.0",
         "husky": "^9.1.7",
-        "turbo": "^2.8.10",
+        "turbo": "^2.10.4",
       },
     },
     "packages/cli": {
       "name": "@7x/jb",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "bin": {
         "jb": "./bin/jb.js",
       },
@@ -44,7 +44,7 @@
     },
     "packages/config": {
       "name": "@7x/jb-config",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "dependencies": {
         "semver": "^7",
       },
@@ -62,7 +62,7 @@
     },
     "packages/core": {
       "name": "@7x/jb-core",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "dependencies": {
         "@inquirer/prompts": "catalog:",
         "semver": "^7",
@@ -82,7 +82,7 @@
     },
     "packages/jb-darwin-arm64": {
       "name": "@7x/jb-darwin-arm64",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "bin": {
         "jb-yarn": "./bin/jb-yarn",
       },
@@ -92,7 +92,7 @@
     },
     "packages/jb-darwin-x64": {
       "name": "@7x/jb-darwin-x64",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "bin": {
         "jb-yarn": "./bin/jb-yarn",
       },
@@ -102,7 +102,7 @@
     },
     "packages/jb-linux-arm64": {
       "name": "@7x/jb-linux-arm64",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "bin": {
         "jb-yarn": "./bin/jb-yarn",
       },
@@ -112,7 +112,7 @@
     },
     "packages/jb-linux-x64": {
       "name": "@7x/jb-linux-x64",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "bin": {
         "jb-yarn": "./bin/jb-yarn",
       },
@@ -122,9 +122,9 @@
     },
     "packages/jb-win32-arm64": {
       "name": "@7x/jb-win32-arm64",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "bin": {
-        "jb-yarn": "./bin/jb-yarn",
+        "jb-yarn": "./bin/jb-yarn.exe",
       },
       "devDependencies": {
         "prettier": "catalog:",
@@ -132,9 +132,9 @@
     },
     "packages/jb-win32-x64": {
       "name": "@7x/jb-win32-x64",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "bin": {
-        "jb-yarn": "./bin/jb-yarn",
+        "jb-yarn": "./bin/jb-yarn.exe",
       },
       "devDependencies": {
         "prettier": "catalog:",
