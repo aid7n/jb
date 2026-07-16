@@ -16,13 +16,26 @@
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",
     "dev": "bun run --watch src/main.ts --jbdev",
-    "build": "bun ./build.ts all",
-    "build:generic": "bun ./build.ts"
+    "build": "bun ./src/build.ts all",
+    "build:types": "tsc --noEmit false",
+    "build:generic": "bun ./src/build.ts"
   },
   "exports": {
-    ".": "./src/jb.ts",
-    "./types": "./src/types.ts",
-    "./parser": "./src/parser.ts"
+    ".": {
+      "default": "./src/jb.ts",
+      "types": "./dist/jb.d.ts",
+      "import": "./dist/jb.js"
+    },
+    "./types": {
+      "default": "./src/types.ts",
+      "types": "./dist/types.d.ts",
+      "import": "./dist/types.js"
+    },
+    "./parser": {
+      "default": "./src/parser.ts",
+      "types": "./dist/parser.d.ts",
+      "import": "./dist/parser.js"
+    }
   },
   "dependencies": {
     "semver": "^7",
@@ -42,5 +55,8 @@
   },
   "engines": {
     "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

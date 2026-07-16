@@ -1,5 +1,9 @@
 {
   "extends": "@7x/jb-config/ts",
-  "include": ["src", "build.ts"],
-  "exclude": ["node_modules"]
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist"
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "bin"]
 }

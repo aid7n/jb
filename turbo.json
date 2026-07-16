@@ -8,6 +8,11 @@
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": ["dist/**", "bin/**"]
     },
+    "build:types": {
+      "dependsOn": ["^build:types"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**", "bin/**"]
+    },
     "lint": {
       "dependsOn": ["^lint"]
     },

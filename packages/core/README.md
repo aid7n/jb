@@ -1,3 +1,3 @@
-## @7x/jb-linux-arm64
+## @7x/jb-core
 
-This package contains the Linux ARM64 binary for jb (jfrog-bun)
+This package contains the core functions for jb (jfrog-bun)
