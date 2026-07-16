@@ -25,7 +25,7 @@ export class JB {
    * @returns void
    */
   private Log(message: string): void {
-    const v = Bun.env.BUN_JF_LOGS_ENABLED || "true";
+    const v = Bun.env.JB_LOGS_ENABLED || "true";
     if (v !== "true") return;
     const prefix = `[@7x/jb] ${new Date().toISOString()} - `;
     const rootDir = path.resolve(Bun.env.TURBO_INVOCATION_DIR ?? process.cwd());
@@ -54,7 +54,7 @@ export class JB {
    * @returns void
    */
   public InvokeVersionCmd(): void {
-    const v = Bun.env.BUN_JF_SIMULATE_VERSION || "3.0.0";
+    const v = Bun.env.JB_SIMULATE_VERSION || "3.0.0";
     this.stdout.write(v);
     this.Log("intercepted yarn version command successfully");
     process.exitCode = 0;
@@ -194,7 +194,7 @@ export class JB {
             : lockFile.catalog?.[depName];
           if (catalogVer) {
             deps[depName] = catalogVer;
-            if (Bun.env.BUN_JF_WRITE_CATALOG_FIXES === "true") {
+            if (Bun.env.JB_WRITE_CATALOG_FIXES === "true") {
               const pkgJson = path.resolve(
                 rootDir,
                 wsName === "" ? "package.json" : `${wsName}/package.json`,

@@ -4,7 +4,8 @@ import { execSync } from "node:child_process";
 import fs from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
-import packageJson from "../package.json" with { type: "json" };
+
+declare const JB_CLI_VERSION: string;
 
 interface InitResult {
   bunBinPath: string;
@@ -185,11 +186,6 @@ async function enableJB(
     stdout.write(`\n------------------------\n\n`);
 
     process.exitCode = 0;
-
-    if (src === "menu") {
-      const _init = await initialize(true);
-      await main(_init!);
-    }
     return;
   } catch (err) {
     stdout.write(`❌ failed to create ${strategy} - ${err}\n`);
@@ -236,11 +232,6 @@ async function disableJB(init: InitResult, src: "menu" | "arg"): Promise<void> {
     stdout.write(`\n------------------------\n\n`);
 
     process.exitCode = 0;
-
-    if (src === "menu") {
-      const _init = await initialize(true);
-      await main(_init!);
-    }
     return;
   } catch (err) {
     stdout.write(`❌ failed to disable JFrog Bun compatibility - ${err}\n`);
@@ -282,33 +273,40 @@ async function handleSelection(
       process.exitCode = 1;
       break;
   }
-  if (src === "menu") await main(init);
 }
 
 async function main(init: InitResult): Promise<void> {
-  const selection = await select({
-    message: "What would you like to do?",
-    choices: [
-      {
-        value: "enable",
-        name: "Enable JFrog Bun compatibility",
-        disabled: !!init.canDisable,
-        description:
-          "This will override system yarn commands to route with Bun where required for JFrog CLI.\nYou can restore default yarn functionality by running this setup again and selecting disable.",
-      },
-      {
-        value: "disable",
-        name: "Disable JFrog Bun compatibility",
-        disabled: !init.canDisable,
-        description: `This will restore default yarn functionality if installed.\nNOTE: This option is only available if you have previously enabled jb and already had a yarn executable installed on your system.\nIf you did not previously have yarn, you can manually remove the yarn link from ${init.bunBinPath}`,
-      },
-    ],
-  });
-  await handleSelection(selection, init, "menu");
+  try {
+    const selection = await select({
+      message: "What would you like to do?",
+      choices: [
+        {
+          value: "enable",
+          name: "Enable JFrog Bun compatibility",
+          disabled: !!init.canDisable,
+          description:
+            "This will override system yarn commands to route with Bun where required for JFrog CLI.\nYou can restore default yarn functionality by running this setup again and selecting disable.",
+        },
+        {
+          value: "disable",
+          name: "Disable JFrog Bun compatibility",
+          disabled: !init.canDisable,
+          description: `This will restore default yarn functionality if installed.\nNOTE: This option is only available if you have previously enabled jb and already had a yarn executable installed on your system.\nIf you did not previously have yarn, you can manually remove the yarn link from ${init.bunBinPath}`,
+        },
+      ],
+    });
+    await handleSelection(selection, init, "menu");
+  } catch (err) {
+    if (err instanceof Error && err.name === "ExitPromptError") {
+      stdout.write(`\n❌ setup cancelled by user\n`);
+    } else {
+      stdout.write(`\n❌ setup failed - ${err}\n`);
+    }
+  }
 }
 
 // entry point
-stdout.write(`@7x/jb@${packageJson.version} (${platform}-${arch})\n\n`);
+stdout.write(`@7x/jb@${JB_CLI_VERSION ?? "local"} (${platform}-${arch})\n\n`);
 const init = await initialize();
 if (init) {
   if (!setupArg) {
