@@ -4,7 +4,8 @@
   "private": false,
   "license": "MIT",
   "files": [
-    "src"
+    "src",
+    "dist"
   ],
   "repository": {
     "type": "git",
