@@ -49,7 +49,7 @@ async function initialize(disableLog?: boolean): Promise<InitResult | null> {
     const jbYarnBinPath = path.join(
       path.dirname(require.resolve(`${pkg}/package.json`)),
       "bin",
-      "jb-yarn",
+      `jb-yarn${isWindows ? ".exe" : ""}`,
     );
     if (!jbYarnBinPath || !fs.existsSync(jbYarnBinPath)) {
       throw new Error("jb-yarn binary not found");
@@ -75,7 +75,7 @@ function locateBin(
   try {
     if (isWindows) {
       const _path = execSync(
-        `powershell.exe "gcm ${executable} | select -expandproperty source"`,
+        `gcm ${executable} -erroraction 'silentlycontinue' | select -expandproperty source`,
       )
         .toString()
         .trim();
@@ -130,7 +130,11 @@ async function enableJB(
   const yarn = locateBin("yarn");
   if (yarn) {
     const backupPath = isWindows
-      ? yarn.replace(".exe", "-jb-bak.exe")
+      ? yarn
+          .toLowerCase()
+          .replace(".exe", "-jb-bak.exe")
+          .replace(".ps1", "-jb-bak.ps1")
+          .replace(".cmd", "-jb-bak.cmd")
       : yarn + "-jb-bak";
     const renamed = renameBin(yarn, backupPath);
     if (!renamed) {
@@ -148,7 +152,7 @@ async function enableJB(
     if (strategy === "symlink") {
       fs.symlinkSync(
         init.jbYarnBinPath,
-        init.bunBinPath + "/" + (isWindows ? "yarn.exe" : "yarn"),
+        path.join(init.bunBinPath, isWindows ? "yarn.exe" : "yarn"),
       );
       stdout.write(
         `✅ created symlink from ${init.jbYarnBinPath} to ${init.bunBinPath}\n`,
@@ -156,7 +160,7 @@ async function enableJB(
     } else if (strategy === "copy") {
       fs.copyFileSync(
         init.jbYarnBinPath,
-        init.bunBinPath + "/" + (isWindows ? "yarn.exe" : "yarn"),
+        path.join(init.bunBinPath, isWindows ? "yarn.exe" : "yarn"),
       );
       stdout.write(`✅ copied ${init.jbYarnBinPath} to ${init.bunBinPath}\n`);
     } else {
@@ -197,6 +201,7 @@ async function disableJB(src: "menu" | "arg"): Promise<void> {
       process.exitCode = 1;
       return;
     }
+
     removeBin(jbYarn);
     const restorePath = yarnBkp.replace("-jb-bak", "");
     const renamed = renameBin(yarnBkp, restorePath);
@@ -207,12 +212,17 @@ async function disableJB(src: "menu" | "arg"): Promise<void> {
       process.exitCode = 1;
       return;
     }
+    const _yarnBkp = locateBin("yarn-jb-bak");
+    if (_yarnBkp) {
+      return disableJB(src);
+    }
 
     stdout.write(`✅ restored ${yarnBkp} to ${restorePath}\n`);
     stdout.write(`📝 summary of changes:\n`);
     changeset.forEach(({ oldPath, newPath }) => {
       stdout.write(`- ${oldPath} -> ${newPath}\n`);
     });
+
     stdout.write(`\n------------------------\n\n`);
 
     process.exitCode = 0;
