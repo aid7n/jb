@@ -1,7 +1,7 @@
 {
   "name": "@7x/jb-core",
   "version": "1.0.1",
-  "private": true,
+  "private": false,
   "license": "MIT",
   "files": [
     "src"
