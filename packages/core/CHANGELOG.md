@@ -1,5 +1,12 @@
 # @7x/jb-core
 
+## 1.0.1
+
+### Patch Changes
+
+- 0db5679: export types from core
+- 8585df5: fix dependency versioning
+
 ## 1.0.0
 
 ### Major Changes
