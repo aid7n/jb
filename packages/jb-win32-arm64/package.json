@@ -18,7 +18,7 @@
     "arm64"
   ],
   "bin": {
-    "jb-yarn": "./bin/jb-yarn"
+    "jb-yarn": "./bin/jb-yarn.exe"
   },
   "engines": {
     "node": ">=20"
