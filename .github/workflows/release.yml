@@ -55,6 +55,7 @@ jobs:
         uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           publish: bun ci:publish
