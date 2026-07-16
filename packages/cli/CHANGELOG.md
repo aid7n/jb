@@ -1,5 +1,13 @@
 # @7x/jb
 
+## 1.0.3
+
+### Patch Changes
+
+- 6657076: fix cli binary
+- Updated dependencies [6657076]
+  - @7x/jb-core@1.0.3
+
 ## 1.0.2
 
 ### Patch Changes
