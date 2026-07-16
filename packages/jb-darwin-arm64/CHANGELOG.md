@@ -1,5 +1,11 @@
 # @7x/jb-darwin-arm64
 
+## 1.0.3
+
+### Patch Changes
+
+- 6657076: fix cli binary
+
 ## 1.0.2
 
 ## 1.0.1
