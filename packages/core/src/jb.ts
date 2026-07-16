@@ -112,7 +112,13 @@ export class JB {
       this.ExitWithError(err.message, true);
     });
 
-    if (!lockFile) return;
+    if (!lockFile) {
+      this.ExitWithError(
+        `could not detect lockfile at path: ${rootPkgLockPath}`,
+        true,
+      );
+      return;
+    }
 
     // consumer packages
     for (const pkgData of Object.values(lockFile.packages ?? {})) {
@@ -279,5 +285,64 @@ export class JB {
       `intercepted yarn info command successfully - outputted ${yarnInfo.size} lines`,
     );
     process.exitCode = 0;
+  }
+
+  /**
+   * checks to ensure registry is set to a JFrog Artifactory registry, either via NPM_CONFIG_REGISTRY env var or bunfig.toml install.registry property
+   * @returns void
+   */
+  public async CheckRegistry(): Promise<void> {
+    const env = Bun.env.NPM_CONFIG_REGISTRY;
+    if (env && env.includes("artifactory")) {
+      this.Log(`detected JFrog Artifactory registry configured`);
+      return;
+    }
+
+    const parser = new JBParser();
+    const rootDir = path.resolve(Bun.env.TURBO_INVOCATION_DIR ?? process.cwd());
+    const rootBunfigPath = path.resolve(rootDir, "bunfig.toml");
+
+    const bunfig = await parser.Bunfig(rootBunfigPath).catch((err) => {
+      throw new Error(err.message);
+    });
+
+    if (!bunfig) {
+      throw new Error(
+        `could not detect bunfig at path: ${rootBunfigPath} and no NPM_CONFIG_REGISTRY env var set`,
+      );
+    }
+
+    if (!bunfig.install.registry) {
+      throw new Error(
+        `bunfig install.registry not set and no NPM_CONFIG_REGISTRY env var set`,
+      );
+    } else if (
+      bunfig.install.registry &&
+      typeof bunfig.install.registry === "string"
+    ) {
+      if (bunfig.install.registry.includes("artifactory")) {
+        this.Log(`detected JFrog Artifactory registry configured`);
+        return;
+      } else {
+        throw new Error(
+          `bunfig install.registry is set to ${bunfig.install.registry} but does not include "artifactory" and no NPM_CONFIG_REGISTRY env var set`,
+        );
+      }
+    } else if (
+      bunfig.install.registry &&
+      typeof bunfig.install.registry === "object"
+    ) {
+      if (bunfig.install.registry.url.includes("artifactory")) {
+        this.Log(`detected JFrog Artifactory registry configured`);
+        return;
+      } else {
+        throw new Error(
+          `bunfig install.registry.url is set to ${bunfig.install.registry.url} but does not include "artifactory" and no NPM_CONFIG_REGISTRY env var set`,
+        );
+      }
+    }
+
+    process.exitCode = 0;
+    return;
   }
 }

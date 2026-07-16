@@ -63,5 +63,10 @@ if (!yarnArg) {
     true,
   );
 } else {
-  invokeCmd(yarnArg);
+  await jb
+    .CheckRegistry()
+    .then(async () => {
+      await invokeCmd(yarnArg);
+    })
+    .catch((err) => jb.ExitWithError(err.message, true));
 }

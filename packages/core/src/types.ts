@@ -81,3 +81,9 @@ export interface BunLock {
   catalogs?: BunCatalogs;
   packages?: BunPackages;
 }
+
+export interface Bunfig {
+  install: {
+    registry: string | { url: string; token: string };
+  }
+}
