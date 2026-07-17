@@ -1,5 +1,12 @@
 # @7x/jb-core
 
+## 1.0.4
+
+### Patch Changes
+
+- a478cbf: improve command handling
+- a478cbf: load cwd environment variables in built executable
+
 ## 1.0.3
 
 ### Patch Changes

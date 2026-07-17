@@ -14,7 +14,7 @@
     },
     "packages/cli": {
       "name": "@7x/jb",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "bin": {
         "jb": "./bin/jb.js",
       },
@@ -44,7 +44,7 @@
     },
     "packages/config": {
       "name": "@7x/jb-config",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "dependencies": {
         "semver": "^7",
       },
@@ -62,7 +62,7 @@
     },
     "packages/core": {
       "name": "@7x/jb-core",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "dependencies": {
         "@inquirer/prompts": "catalog:",
         "dotenv": "^17",
@@ -83,7 +83,7 @@
     },
     "packages/jb-darwin-arm64": {
       "name": "@7x/jb-darwin-arm64",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "bin": {
         "jb-yarn": "./bin/jb-yarn",
       },
@@ -93,7 +93,7 @@
     },
     "packages/jb-darwin-x64": {
       "name": "@7x/jb-darwin-x64",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "bin": {
         "jb-yarn": "./bin/jb-yarn",
       },
@@ -103,7 +103,7 @@
     },
     "packages/jb-linux-arm64": {
       "name": "@7x/jb-linux-arm64",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "bin": {
         "jb-yarn": "./bin/jb-yarn",
       },
@@ -113,7 +113,7 @@
     },
     "packages/jb-linux-x64": {
       "name": "@7x/jb-linux-x64",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "bin": {
         "jb-yarn": "./bin/jb-yarn",
       },
@@ -123,7 +123,7 @@
     },
     "packages/jb-win32-arm64": {
       "name": "@7x/jb-win32-arm64",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "bin": {
         "jb-yarn": "./bin/jb-yarn.exe",
       },
@@ -133,7 +133,7 @@
     },
     "packages/jb-win32-x64": {
       "name": "@7x/jb-win32-x64",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "bin": {
         "jb-yarn": "./bin/jb-yarn.exe",
       },
