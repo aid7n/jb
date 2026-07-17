@@ -1,5 +1,15 @@
 # @7x/jb
 
+## 1.0.4
+
+### Patch Changes
+
+- a478cbf: improve command handling
+- a478cbf: improve tui ux
+- Updated dependencies [a478cbf]
+- Updated dependencies [a478cbf]
+  - @7x/jb-core@1.0.4
+
 ## 1.0.3
 
 ### Patch Changes
